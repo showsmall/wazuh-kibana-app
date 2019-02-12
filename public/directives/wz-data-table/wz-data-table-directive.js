@@ -110,6 +110,7 @@ class WzDataTable {
         $scope.wazuh_table_loading = true;
         await fetch();
         $scope.wazuh_table_loading = false;
+        $scope.$applyAsync();
       } catch (error) { }; // eslint-disable-line
     };
 

@@ -63,6 +63,7 @@ export const KeyEquivalenece = {
   protocol: 'Protocol',
   netmask: 'Netmask',
   'local.ip': 'Local IP',
+  local_ip: 'Local IP',
   'remote.ip': 'Remote IP',
   'local.port': 'Local port',
   'remote.port': 'Remote port',
@@ -79,5 +80,13 @@ export const KeyEquivalenece = {
   priority: 'Priority',
   cmd: 'CMD',
   nlwp: 'NLWP',
-  process: 'Process'
+  process: 'Process',
+  connection: 'Connection',
+  port: 'Port',
+  ipv6: 'IPv6',
+  queue_size: 'Queue size',
+  'allowed-ips': 'Allowed IPs',
+  'denied-ips': 'Denied IPs',
+  entry: 'Entry',
+  arch: 'Arch'
 };
