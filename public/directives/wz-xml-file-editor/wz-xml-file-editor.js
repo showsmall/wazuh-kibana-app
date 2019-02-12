@@ -241,6 +241,11 @@ class WzXmlFileEditor {
       }
     });
 
+    $scope.toggleFullScreen = async () => {
+      $scope.fullScreenView = !$scope.fullScreenView;
+      setTimeout(() => { $scope.xmlCodeBox.refresh() }, 1);
+    }
+
     $scope.xmlCodeBox.on('change', () => {
       checkXmlParseError();
     });

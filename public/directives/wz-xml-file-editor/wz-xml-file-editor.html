@@ -1,10 +1,15 @@
-<div class='wzXmlEditor'>
-    <div class='wzXmlEditorHeader'>
-        <span>Edit <b>{{fileName}}</b> of <b>{{targetName}}</b> <span tooltip='{{xmlError}}' class="wz-agent-status-indicator small red"
-                ng-if="xmlError">{{xmlError}}</span></span>
-    </div>
-    <div class='wzXmlEditorBody' ng-show='!loadingFile'>
-        <textarea id='xml_box'></textarea>
+<div ng-class="fullScreenView ? 'file-editor-full-screen' : ''">
+    <div class='wzXmlEditor'>
+        <div class='wzXmlEditorHeader'>
+            <span>Edit <b>{{fileName}}</b> of <b>{{targetName}}</b> <span tooltip='{{xmlError}}' class="wz-agent-status-indicator small red"
+                    ng-if="xmlError">{{xmlError}}</span></span>
+            <span ng-click="toggleFullScreen()" class="action-btn">
+                <i ng-show="!fullScreenView" class="fa fa-expand" aria-hidden="true"></i>
+                <i ng-show="fullScreenView" class="fa fa-compress" aria-hidden="true"></i></span>
+        </div>
+        <div class='wzXmlEditorBody' ng-show='!loadingFile'>
+            <textarea id='xml_box'></textarea>
+        </div>
     </div>
 </div>
 <wz-custom-toaster></wz-custom-toaster>
