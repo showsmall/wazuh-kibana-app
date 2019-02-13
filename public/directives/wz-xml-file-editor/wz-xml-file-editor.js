@@ -28,7 +28,7 @@ class WzXmlFileEditor {
     };
     this.template = template;
   }
-  controller($scope, $rootScope, $document, $location, errorHandler, $mdDialog, apiReq, groupHandler, rulesetHandler, configHandler) {
+  controller($scope, $rootScope, $document, errorHandler, apiReq, groupHandler, rulesetHandler, configHandler) {
 
     /**
      * Custom .replace method. Instead of using .replace which
@@ -317,7 +317,7 @@ class WzXmlFileEditor {
     $scope.$on('saveXmlFile', (ev, params) => saveFile(params));
 
     $scope.$on('$destroy', function () {
-      $location.search('editingFile', null);
+      //$location.search('editingFile', null);
     });
   }
 }

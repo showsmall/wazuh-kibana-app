@@ -219,31 +219,23 @@ export class CdbListsController {
       );
     this.viewingDetail = false;
     this.currentList = false;
-    this.$emit('removeCurrentList');
+    this.addingList = false;
+    this.$scope.$emit('removeCurrentList');
     this.$scope.$applyAsync();
   }
 
-
-  fetchCdbList = async (listname) => {
-    const incomingList = listname;
-    try {
-      this.$location.search('listname', null);
-      const data = await this.apiReq.request('get', `/cdblists/${incomingList}`, {});
-      this.currentList = data.data.data.items[0];
-      this.$emit('setCurrentList', { currentList: this.currentList });
-      if (
-        !(Object.keys((this.currentList || {}).details || {}) || []).length
-      ) {
-        this.currentList.details = false;
-      }
-      this.viewingDetail = true;
-      this.$scope.$applyAsync();
-    } catch (error) {
-      this.errorHandler.handle(
-        `Error fetching list: ${incomingList} from the Wazuh API`,
-        'CDB Lists'
-      )
-    }
+  addNewList() {
+    this.addingList = true;
+    this.currentList = {
+      name: '',
+      path: 'etc/lists/',
+      list: [],
+      new: true
+    };
+    this.viewingDetail = true;
+    this.$scope.$applyAsync();
+    this.$scope.$broadcast('changeCdbList', {
+      currentList: this.currentList
+    });
   }
-
 }
