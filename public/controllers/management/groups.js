@@ -293,7 +293,7 @@ export function GroupsController(
     $scope.editingFile = false;
     appState.setNavigation({ status: true });
     $scope.$broadcast('closeEditXmlFile', {});
-    this.$scope.$applyAsync();
+    $scope.$applyAsync();
   };
 
   $scope.xmlIsValid = valid => {
@@ -588,7 +588,7 @@ export function GroupsController(
     appState.setNavigation({ status: true });
     $location.search('navigation', true);
     try {
-      $scope.loadGroup(parameters.group);
+      await $scope.loadGroup(parameters.group);
       const result = await $scope.editGroupAgentConfig();
       return result;
     } catch (error) {

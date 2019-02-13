@@ -339,11 +339,7 @@ class WzTable {
     };
 
     $scope.editGroup = group => {
-      if ($location.search() && $location.search().tab && $location.search().tab === 'configuration') {
-        $scope.clickAction(group);
-      } else {
-        $scope.$emit('openGroupFromList', { group })
-      }
+      $scope.$emit('openGroupFromList', { group })
     }
   }
 }
