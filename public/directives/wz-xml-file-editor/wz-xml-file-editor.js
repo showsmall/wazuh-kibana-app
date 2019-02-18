@@ -221,7 +221,6 @@ class WzXmlFileEditor {
               ? showRestartDialog(msg, params.showRestartManager)
               : errorHandler.handle(warnMsg, '', true)
             : errorHandler.info(msg, '');
-          $scope.$emit('configurationSuccess');
         } else if (params.rule) {
           await rulesetHandler.sendRuleConfiguration(params.rule, xml);
           try {

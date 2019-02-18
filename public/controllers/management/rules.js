@@ -248,7 +248,7 @@ export function RulesController(
     $scope.editingFile = false;
     appState.setNavigation({ status: true });
     $scope.$broadcast('closeEditXmlFile', {});
-    this.$scope.$applyAsync();
+    $scope.$applyAsync();
   };
 
   $scope.xmlIsValid = valid => {
