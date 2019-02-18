@@ -1,7 +1,7 @@
 <div ng-class="fullScreenView ? 'file-editor-full-screen' : ''">
     <div class='wzXmlEditor'>
         <div class='wzXmlEditorHeader'>
-            <span>Edit <b>{{fileName}}</b> of <b>{{targetName}}</b> <span tooltip='{{xmlError}}' class="wz-agent-status-indicator small red"
+            <span>Edit <b>{{fileName}}</b> of <b>{{targetName}}</b> <span tooltip='{{xmlError}}' class="wz-agent-status-indicator small red-text"
                     ng-if="xmlError">{{xmlError}}</span></span>
             <span ng-click="toggleFullScreen()" class="action-btn">
                 <i ng-show="!fullScreenView" class="fa fa-expand" aria-hidden="true"></i>

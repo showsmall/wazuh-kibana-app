@@ -93,6 +93,8 @@ export class AgentsController {
     this.$scope.editGroup = false;
 
     this.$scope.addingGroupToAgent = false;
+
+    this.$scope.expandArray = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
   }
 
   /**
@@ -356,11 +358,11 @@ export class AgentsController {
 
     this.$scope.cancelAddGroup = () => (this.$scope.addingGroupToAgent = false);
 
-    
+
     this.$scope.confirmAddGroup = async (group) => {
       try {
         await this.groupHandler.addAgentToGroup(group, this.$scope.agent.id);
-        const agent = await this.apiReq.request('GET', `/agents/${this.$scope.agent.id}`, {});
+        const agent = this.apiReq.request('GET', `/agents/${this.$scope.agent.id}`, {})
         this.$scope.agent.group = agent.data.data.group;
         this.$scope.groups = this.$scope.groups.filter(
           item => !agent.data.data.group.includes(item)
@@ -376,8 +378,9 @@ export class AgentsController {
           error.message || error,
           'Error adding group to agent'
         );
-      };
+      }
     }
+    this.$scope.expand = i => this.expand(i);
   }
   /**
    * Create metric for given object
@@ -474,6 +477,7 @@ export class AgentsController {
    * @param {*} force
    */
   async switchTab(tab, force = false) {
+    this.falseAllExpand();
     if (this.ignoredTabs.includes(tab)) {
       this.commonData.setRefreshInterval(timefilter.getRefreshInterval());
       timefilter.setRefreshInterval({ pause: true, value: 0 });
@@ -874,5 +878,15 @@ export class AgentsController {
       (this.$scope.agent || {}).id || true,
       syscollectorFilters.length ? syscollectorFilters : null
     );
+  }
+
+  falseAllExpand() {
+    this.$scope.expandArray = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
+  }
+
+  expand(i) {
+    const oldValue = this.$scope.expandArray[i];
+    this.falseAllExpand();
+    this.$scope.expandArray[i] = !oldValue;
   }
 }

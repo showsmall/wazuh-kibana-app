@@ -54,6 +54,31 @@ class WzTable {
     groupHandler,
     wazuhConfig
   ) {
+    $scope.showColumns = false;
+    $scope.originalkeys = $scope.keys.map((key, idx) => ({ key, idx }));
+    $scope.updateColumns = (key) => {
+      const str = key.key.value || key.key;
+      const cleanArray = $scope.keys.map(item => item.value || item);
+      if (cleanArray.includes(str)) {
+        const idx = cleanArray.indexOf(str);
+        if (idx > -1) {
+          $scope.keys.splice(idx, 1);
+        }
+      } else {
+        const originalIdx = $scope.originalkeys.findIndex(item => (item.key.value || item.key) === (key.key.value || key.key));
+        if (originalIdx >= 0) {
+          $scope.keys.splice(originalIdx, 0, key.key);
+        } else {
+          $scope.keys.push(key.key)
+        }
+      }
+    }
+    $scope.exists = (key) => {
+      const str = key.key.value || key.key;
+      for (const k of $scope.keys) if ((k.value || k) === str) return true;
+      return false;
+    }
+
     /**
      * Init variables
      */
@@ -72,8 +97,8 @@ class WzTable {
     $scope.adminMode = !!(configuration || {}).admin;
 
     /**
-     * Resizing. Calculate number of table rows depending on the screen height
-     */
+    * Resizing. Calculate number of table rows depending on the screen height
+    */
     const rowSizes = $scope.rowSizes || [15, 13, 11];
     let doit;
     // Prevents duplicated rows when resizing

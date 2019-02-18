@@ -28,7 +28,17 @@ class WzXmlFileEditor {
     };
     this.template = template;
   }
-  controller($scope, $rootScope, $document, errorHandler, appState, apiReq, groupHandler, rulesetHandler, configHandler) {
+  controller(
+    $scope,
+    $rootScope,
+    $document,
+    $location,
+    appState,
+    errorHandler,
+    groupHandler,
+    rulesetHandler,
+    configHandler,
+    apiReq) {
 
     /**
      * Custom .replace method. Instead of using .replace which
@@ -180,61 +190,98 @@ class WzXmlFileEditor {
         const data = ((validation || {}).data || {}).data || {};
         const isOk = data.status === 'OK';
         if (!isOk && Array.isArray(data.details)) {
-          let str = '';
-          for (const detail of data.details) str += detail;
+          const str = data.details.join();
           throw new Error(str);
         }
         return true;
       } catch (error) {
-        return Promise.reject(error);
+        errorHandler.handle(error, 'Error');
+        throw new Error(error);
       }
     };
 
     const saveFile = async params => {
+      let close = true;
+      const warnMsg =
+        'File has been updated, but there are errors in the configuration';
       try {
         const text = $scope.xmlCodeBox.getValue();
         const xml = replaceIllegalXML(text);
         if (params.group) {
           await groupHandler.sendConfiguration(params.group, xml);
-          await validateAfterSent();
+          try {
+            await validateAfterSent();
+          } catch (err) {
+            params.showRestartManager = 'warn';
+            close = false;
+          }
           const msg = 'Success. Group has been updated';
           params.showRestartManager
-            ? showRestartDialog(msg, params.showRestartManager)
+            ? params.showRestartManager !== 'warn'
+              ? showRestartDialog(msg, params.showRestartManager)
+              : errorHandler.handle(warnMsg, '', true)
             : errorHandler.info(msg, '');
           $scope.$emit('configurationSuccess');
         } else if (params.rule) {
           await rulesetHandler.sendRuleConfiguration(params.rule, xml);
-          await validateAfterSent();
+          try {
+            await validateAfterSent();
+          } catch (err) {
+            params.showRestartManager = 'warn';
+            close = false;
+          }
           const msg = 'Success. Rules updated';
           params.showRestartManager
-            ? showRestartDialog(msg, params.showRestartManager)
+            ? params.showRestartManager !== 'warn'
+              ? showRestartDialog(msg, params.showRestartManager)
+              : errorHandler.handle(warnMsg, '', true)
             : errorHandler.info(msg, '');
         } else if (params.decoder) {
           await rulesetHandler.sendDecoderConfiguration(params.decoder, xml);
-          await validateAfterSent();
+          try {
+            await validateAfterSent();
+          } catch (err) {
+            params.showRestartManager = 'warn';
+            close = false;
+          }
           const msg = 'Success. Decoders has been updated';
           params.showRestartManager
-            ? showRestartDialog(msg, params.showRestartManager)
+            ? params.showRestartManager !== 'warn'
+              ? showRestartDialog(msg, params.showRestartManager)
+              : errorHandler.handle(warnMsg, '', true)
             : errorHandler.info(msg, '');
         } else if (params.node) {
           await configHandler.saveNodeConfiguration(params.node, xml);
-          await validateAfterSent();
+          try {
+            await validateAfterSent();
+          } catch (err) {
+            params.showRestartManager = 'warn';
+            close = false;
+          }
           const msg = `Success. Node (${
             params.node
             }) configuration has been updated`;
           params.showRestartManager
-            ? showRestartDialog(msg, params.node)
+            ? params.showRestartManager !== 'warn'
+              ? showRestartDialog(msg, params.node)
+              : errorHandler.handle(warnMsg, '', true)
             : errorHandler.info(msg, '');
         } else if (params.manager) {
           await configHandler.saveManagerConfiguration(xml);
-          await validateAfterSent();
+          try {
+            await validateAfterSent();
+          } catch (err) {
+            params.showRestartManager = 'warn';
+            close = false;
+          }
           const msg = 'Success. Manager configuration has been updated';
           params.showRestartManager
-            ? showRestartDialog(msg, params.showRestartManager)
+            ? params.showRestartManager !== 'warn'
+              ? showRestartDialog(msg, params.showRestartManager)
+              : errorHandler.handle(warnMsg, '', true)
             : errorHandler.info(msg, '');
         }
-
-        $scope.closeFn({ reload: true });
+        if (close) $scope.closeFn({ reload: true });
       } catch (error) {
         errorHandler.handle(error, 'Error');
       }
@@ -351,7 +398,8 @@ class WzXmlFileEditor {
     $scope.$on('saveXmlFile', (ev, params) => saveFile(params));
 
     $scope.$on('$destroy', function () {
-      //$location.search('editingFile', null);
+      $location.search('editingFile', null);
+      appState.setNavigation({ status: true });
     });
   }
 }

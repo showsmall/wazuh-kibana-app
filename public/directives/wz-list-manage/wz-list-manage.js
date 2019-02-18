@@ -21,7 +21,9 @@ class WzListManage {
   constructor() {
     this.restrict = 'E';
     this.scope = {
-      list: '=list'
+      list: '=list',
+      closeFn: '&',
+      hideClose: '='
     };
     this.template = template;
   }
@@ -30,8 +32,8 @@ class WzListManage {
     $rootScope,
     errorHandler,
     $filter,
-    configHandler,
     rulesetHandler,
+    configHandler,
     wazuhConfig,
     appState
   ) {
@@ -111,6 +113,12 @@ class WzListManage {
           $scope.currentList.new = false;
           $scope.currentList.name = $scope.currentList.newName;
         }
+        const containsBlanks = /.*[ ].*/;
+        if (containsBlanks.test($scope.currentList.name)) {
+          throw new Error(
+            'Error creating a new file. The filename can not contain white spaces.'
+          );
+        }
         let raw = '';
         for (var key in $scope.currentList.list) {
           raw = raw.concat(`${key}:${$scope.currentList.list[key]}` + '\n');
@@ -124,6 +132,7 @@ class WzListManage {
         fetch();
         $scope.loadingChange = false;
         $scope.$applyAsync();
+        $scope.closeFn();
       } catch (err) {
         if (addingNew) {
           $scope.currentList.name = false;
@@ -191,7 +200,7 @@ class WzListManage {
           errorHandler.info(
             'It may take a few seconds...',
             data.data.data);
-            $scope.$applyAsync();
+          $scope.$applyAsync();
           $rootScope.$emit('removeRestarting', {});
         } catch (error) {
           $rootScope.$emit('setRestarting', {});
