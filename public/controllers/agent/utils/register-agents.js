@@ -9,7 +9,7 @@
  *
  * Find more information about this on the LICENSE file.
  */
-import React from 'react';
+import React, { Component, Fragment } from 'react';
 
 import {
   EuiCodeBlock,
@@ -17,51 +17,92 @@ import {
   EuiText,
   EuiFlexItem,
   EuiFlexGroup,
-  EuiSpacer
+  EuiSpacer,
+  EuiFieldText,
+  EuiSteps,
+  EuiI18n,
+  EuiCopy,
+  EuiButtonEmpty,
+  EuiCode,
+  EuiButtonToggle
 } from '@elastic/eui';
 
-export const configurationSample = `<address>MANAGER_IP</address>`;
+export default class RegisterAgent extends Component {
+  constructor(props) {
+    super(props);
 
-export const installationSteps = [
-  {
-    title: 'Download Wazuh agent installer',
-    children: (
-      <EuiText>
-        <EuiFlexGroup gutterSize="s" alignItems="center">
+    this.state = {
+      value: '',
+      selectedOS: '',
+      rpmtoggle: false,
+      debtoggle: false,
+      wintoggle: false,
+      macostoggle: false
+    };
+
+    this.handleComplete = this.handleComplete.bind(this);
+  }
+
+  handleComplete(i, selectedOS = '') {
+    this.setState({
+      selectedOS,
+      rpmtoggle: i === 0,
+      debtoggle: i === 1,
+      wintoggle: i === 2,
+      macostoggle: i === 3
+    });
+  }
+
+  onChange(e) {
+    this.setState({
+      value: e.target.value
+    });
+  }
+
+  getCommands() {
+    return `// ${this.state.selectedOS} steps\n$ export address=${
+      this.state.value
+    }\n$ bin/wazuh restart`;
+  }
+
+  render() {
+    const firstStep = (
+      <Fragment>
+        <EuiFlexGroup gutterSize="s">
           <EuiFlexItem grow={false}>
-            <EuiButton
-              href="https://packages.wazuh.com/3.x/yum/wazuh-agent-3.8.2-1.x86_64.rpm"
-              iconType="importAction"
-            >
-              RPM
-            </EuiButton>
+            <EuiButtonToggle
+              label="Red Hat / CentOS"
+              fill={this.state.rpmtoggle}
+              onChange={() => this.handleComplete(0, 'Red Hat / CentOS')}
+              isSelected={this.state.rpmtoggle}
+            />
           </EuiFlexItem>
           <EuiFlexItem grow={false}>
-            <EuiButton
-              href="https://packages.wazuh.com/3.x/apt/pool/main/w/wazuh-agent/wazuh-agent_3.8.2-1_amd64.deb"
-              iconType="importAction"
-            >
-              DEB
-            </EuiButton>
+            <EuiButtonToggle
+              label="Debian / Ubuntu"
+              fill={this.state.debtoggle}
+              onChange={() => this.handleComplete(1, 'Debian / Ubuntu')}
+              isSelected={this.state.debtoggle}
+            />
           </EuiFlexItem>
           <EuiFlexItem grow={false}>
-            <EuiButton
-              href="https://packages.wazuh.com/3.x/windows/wazuh-agent-3.8.2-1.msi"
-              iconType="importAction"
-            >
-              MSI
-            </EuiButton>
+            <EuiButtonToggle
+              label="Windows"
+              fill={this.state.wintoggle}
+              onChange={() => this.handleComplete(2, 'Windows')}
+              isSelected={this.state.wintoggle}
+            />
           </EuiFlexItem>
           <EuiFlexItem grow={false}>
-            <EuiButton
-              href="https://packages.wazuh.com/3.x/osx/wazuh-agent-3.8.2-1.pkg"
-              iconType="importAction"
-            >
-              PKG
-            </EuiButton>
+            <EuiButtonToggle
+              label="MacOS"
+              fill={this.state.macostoggle}
+              onChange={() => this.handleComplete(3, 'MacOS')}
+              isSelected={this.state.macostoggle}
+            />
           </EuiFlexItem>
         </EuiFlexGroup>
-        <EuiSpacer size="m" />
+        <EuiSpacer />
         <EuiText color="secondary">
           <p>
             Wazuh agent can also be installed from our package repositories. See{' '}
@@ -74,41 +115,53 @@ export const installationSteps = [
             .
           </p>
         </EuiText>
-      </EuiText>
-    )
-  },
-  {
-    title: 'Open etc/ossec.conf in an editor',
-    children: (
+      </Fragment>
+    );
+
+    const secondStep = (
+      <Fragment>
+        <EuiFlexGroup gutterSize="s">
+          <EuiFlexItem grow={false}>
+            <EuiFieldText
+              placeholder="Server address..."
+              value={this.state.value}
+              onChange={e => this.onChange(e)}
+            />
+          </EuiFlexItem>
+        </EuiFlexGroup>
+      </Fragment>
+    );
+
+    const thirdStep = (
       <EuiText>
-        <p>
-          Replace <strong>MANAGER_IP</strong> with the Wazuh server address.
-        </p>
-        <EuiCodeBlock language="xml">{configurationSample}</EuiCodeBlock>
-      </EuiText>
-    )
-  },
-  {
-    title: 'Register the agent using the registration service',
-    children: (
-      <EuiText>
-        <EuiCodeBlock language="bash">
-          bin/agent-auth -m MANAGER_IP
+        <EuiCodeBlock language="sh" fontSize="m" color="dark">
+          {this.getCommands()}
         </EuiCodeBlock>
       </EuiText>
-    )
-  },
-  {
-    title: 'Restart the Wazuh agent',
-    children: (
-      <EuiText>
-        <p>For Systemd</p>
-        <EuiCodeBlock language="bash">
-          systemctl restart wazuh-agent
-        </EuiCodeBlock>
-        <p>For SysV</p>
-        <EuiCodeBlock language="bash">service wazuh-agent restart</EuiCodeBlock>
-      </EuiText>
-    )
+    );
+
+    const firstSetOfSteps = [
+      {
+        title: 'Choose OS',
+        children: firstStep,
+        status: this.state.statusOne
+      },
+      {
+        title: 'What the Wazuh server address is?',
+        children: secondStep,
+        status: this.state.statusTwo
+      },
+      {
+        title: 'Copy and paste the next commands in the agent instance',
+        children: thirdStep,
+        status: this.state.statusThree
+      }
+    ];
+
+    return (
+      <div>
+        <EuiSteps steps={firstSetOfSteps} />
+      </div>
+    );
   }
-];
+}

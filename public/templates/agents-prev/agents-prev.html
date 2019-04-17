@@ -26,7 +26,8 @@
     ng-if="!ctrl.init && !ctrl.loading && !ctrl.errorInit && ctrl.registeringAgent">
     <div layout="column" flex="20">
     </div>
-    <react-component flex name="EuiSteps" props="{headingElement:'h2', steps:ctrl.installationSteps}" />
+    <!--<react-component flex name="EuiSteps" props="{headingElement:'h2', steps:ctrl.installationSteps}" />-->
+    <react-component flex name="RegisterAgent" props="{}" />
     <div layout="column" flex="20">
         <span class="wz-text-link" ng-click="ctrl.load(true)">
             <react-component name="EuiIcon" props="{type: 'cross'}" /> close

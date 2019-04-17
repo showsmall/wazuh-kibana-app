@@ -22,6 +22,8 @@ import {
   EuiText
 } from '@elastic/eui';
 
+import RegisterAgent from '../controllers/agent/utils/register-agents';
+
 const app = uiModules.get('app/wazuh', ['react']);
 
 app
@@ -32,4 +34,5 @@ app
   .value('EuiButtonIcon', EuiButtonIcon)
   .value('EuiBasicTable', EuiBasicTable)
   .value('EuiSteps', EuiSteps)
-  .value('EuiText', EuiText);
+  .value('EuiText', EuiText)
+  .value('RegisterAgent', RegisterAgent);
