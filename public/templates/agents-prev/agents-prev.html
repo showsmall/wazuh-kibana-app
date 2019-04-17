@@ -22,7 +22,20 @@
     </div>
 </div>
 
-<div ng-if="!ctrl.init && !ctrl.loading && !ctrl.errorInit" layout="column" layout-align="start space-around">
+<div layout="row" class="layout-padding layout-align-center"
+    ng-if="!ctrl.init && !ctrl.loading && !ctrl.errorInit && ctrl.registeringAgent">
+    <div layout="column" flex="20">
+    </div>
+    <react-component flex name="EuiSteps" props="{headingElement:'h2', steps:ctrl.installationSteps}" />
+    <div layout="column" flex="20">
+        <span class="wz-text-link" ng-click="ctrl.load(true)">
+            <react-component name="EuiIcon" props="{type: 'cross'}" /> close
+        </span>
+    </div>
+</div>
+
+<div ng-if="!ctrl.init && !ctrl.loading && !ctrl.errorInit && !ctrl.registeringAgent" layout="column"
+    layout-align="start space-around">
 
     <div class="md-padding euiFlexGroup--wrap layout-row">
         <div class="layout-column md-padding">
@@ -41,8 +54,8 @@
             </div>
             <div layout="row" class="wz-margin-top-16 layout-align-center-center"
                 ng-if="!ctrl.lastAgent || !ctrl.lastAgent.id">
-                <button class="kuiButton kuiButton--success" ng-click="ctrl.openRegistrationDocs()">
-                    <react-component name="EuiIcon" props="{type: 'help'}" /> How to
+                <button class="kuiButton kuiButton--success" ng-click="ctrl.registeringAgent = true">
+                    <react-component name="EuiIcon" props="{type: 'help'}" /> Help
                 </button>
             </div>
         </div>
@@ -122,6 +135,7 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 
@@ -142,6 +156,13 @@
                         allow-click="true" row-sizes="[17,15,13]"></wz-table>
                 </div>
                 <div layout="row" layout-align="end center">
+                    <button type="button" ng-click="ctrl.registeringAgent = !ctrl.registeringAgent"
+                        class="euiButtonEmpty euiButtonEmpty--primary euiButtonEmpty--small">
+                        <span class="euiButtonEmpty__content">
+                            <react-component name="EuiIcon" props="{type:'plusInCircle'}" />
+                            <span class="euiButtonEmpty__text">Add agents</span>
+                        </span>
+                    </button>
                     <button type="button" ng-click="ctrl.downloadCsv()"
                         class="euiButtonEmpty euiButtonEmpty--primary euiButtonEmpty--small">
                         <span class="euiButtonEmpty__content">

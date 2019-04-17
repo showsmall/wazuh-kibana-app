@@ -12,6 +12,11 @@
 import * as FileSaver from '../../services/file-saver';
 import { timefilter } from 'ui/timefilter';
 
+import {
+  installationSteps,
+  configurationSample
+} from './utils/register-agents';
+
 export class AgentsPreviewController {
   /**
    * Class constructor
@@ -49,6 +54,11 @@ export class AgentsPreviewController {
     this.wazuhConfig = wazuhConfig;
     this.errorInit = false;
     this.$window = $window;
+
+    // Register agents react component values
+    this.configurationSample = configurationSample;
+    this.installationSteps = installationSteps;
+    this.registeringAgent = false;
   }
 
   /**
@@ -144,8 +154,9 @@ export class AgentsPreviewController {
   /**
    * On controller loads
    */
-  async load() {
+  async load(force = false) {
     try {
+      this.registeringAgent = false;
       this.errorInit = false;
 
       const configuration = this.wazuhConfig.getConfig();
@@ -218,16 +229,13 @@ export class AgentsPreviewController {
           this.mostActiveAgent.id = info.data.data;
         }
       }
+      this.registeringAgent = !force && (!this.lastAgent || !this.lastAgent.id);
     } catch (error) {
       this.errorInit = this.errorHandler.handle(error, false, false, true);
     }
     this.loading = false;
     this.$scope.$applyAsync();
     return;
-  }
-
-  registerNewAgent(flag) {
-    this.$scope.registerNewAgent = flag;
   }
 
   reloadList() {
